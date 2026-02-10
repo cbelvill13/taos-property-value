@@ -10,37 +10,39 @@ const dmSans = DM_Sans({
 
 const SITE_NAME = "Taos Home Value";
 const SITE_URL = "https://taoshomevalue.com";
-const TITLE = "Taos Home Value | Request a Local Pricing Snapshot";
-const DESCRIPTION =
-  "Get a local, comps-based pricing snapshot for your Taos-area property. No call centers. No lead resale. Just a clear range and the data behind it.";
-const OG_IMAGE = `${SITE_URL}/images/136-3x1hero.jpg`;
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: SITE_URL },
+  title: {
+    default: "Taos Home Value Snapshot",
+    template: "%s | Taos Home Value",
+  },
+  description:
+    "Request a market-based pricing snapshot for your Taos-area property.",
   openGraph: {
     type: "website",
-    url: SITE_URL,
+    url: "/",
     siteName: SITE_NAME,
-    title: TITLE,
-    description: DESCRIPTION,
+    title: "Taos Home Value Snapshot",
+    description:
+      "Request a market-based pricing snapshot for your Taos-area property.",
     images: [
       {
-        url: OG_IMAGE,
+        url: "/images/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Taos Home Value — local pricing snapshot",
+        alt: "Taos Home Value Snapshot",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: TITLE,
-    description: DESCRIPTION,
-    images: [OG_IMAGE],
+    title: "Taos Home Value Snapshot",
+    description:
+      "Request a market-based pricing snapshot for your Taos-area property.",
+    images: ["/images/og-image.jpg"],
   },
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
