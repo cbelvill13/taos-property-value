@@ -272,17 +272,6 @@ export default function Home() {
           That wider lens is what produces a pricing range you can actually use.
         </p>
 
-        <p className="mt-4 text-sm text-neutral-600">
-          <a
-            href="https://taoslandfinder.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-neutral-600 hover:text-neutral-800"
-          >
-            Looking for land instead? Try Taos Land Finder →
-          </a>
-        </p>
-
         <h2 className="mt-8 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
           Request a pricing snapshot
         </h2>
