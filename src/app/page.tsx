@@ -10,30 +10,58 @@ const REMODELED_OPTIONS = [
   { value: "NO", label: "No" },
   { value: "UNKNOWN", label: "Unknown" },
 ];
-const UTILITIES = [
-  "electric",
-  "naturalGas",
-  "propane",
-  "well",
-  "communityWater",
-  "septic",
-  "sewer",
-  "internetFiber",
-  "internetDSL",
-  "internetStarlink",
-  "other",
+const ELECTRIC_OPTIONS = [
+  "Grid – Connected",
+  "Grid – Nearby",
+  "Grid – At Lot",
+  "Off Grid",
+  "Combo",
 ];
-const VIEWS_OPTIONS = ["mountain", "valley", "sunset", "river/creek", "golf", "none", "other"];
+const GAS_OPTIONS = [
+  "Natural Gas",
+  "Propane",
+];
+const WATER_SOURCE_OPTIONS = [
+  { value: "", label: "" },
+  { value: "Well - Private", label: "Well - Private" },
+  { value: "Well - Shared", label: "Well - Shared" },
+  { value: "Community", label: "Community" },
+  { value: "Municipal", label: "Municipal" },
+  { value: "Cistern", label: "Cistern" },
+  { value: "Must Drill", label: "Must Drill" },
+];
+const WASTEWATER_OPTIONS = [
+  { value: "", label: "" },
+  { value: "Septic", label: "Septic" },
+  { value: "Sewer", label: "Sewer" },
+  { value: "Must Install", label: "Must Install" },
+];
+const VIEWS_OPTIONS = [
+  { value: "mountain", label: "Mountain" },
+  { value: "valley", label: "Valley" },
+  { value: "sunset", label: "Sunset" },
+  { value: "river/creek", label: "River / Creek" },
+  { value: "golf", label: "Golf" },
+  { value: "none", label: "None" },
+];
 const ADJACENCY_OPTIONS = [
   "pavedRoad",
   "privateRoad",
-  "highwayNoise",
   "adjacentBLM",
   "adjacentForest",
   "adjacentOpenSpace",
   "adjacentNeighborhood",
   "other",
 ];
+const ADJACENCY_LABELS: Record<string, string> = {
+  pavedRoad: "Paved Road",
+  privateRoad: "Private Road",
+  adjacentBLM: "Adjacent to BLM Land",
+  adjacentForest: "Adjacent to National Forest",
+  adjacentOpenSpace: "Adjacent Open Space",
+  adjacentNeighborhood: "Adjacent Neighborhood",
+  other: "Other",
+};
 const TIMELINE_OPTIONS = [
   { value: "", label: "" },
   { value: "just-curious", label: "Just curious" },
@@ -41,6 +69,22 @@ const TIMELINE_OPTIONS = [
   { value: "within-6-months", label: "Within 6 months" },
   { value: "within-12-months", label: "Within 12 months" },
   { value: "flexible", label: "Flexible" },
+];
+const HOA_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "YES", label: "Yes" },
+  { value: "NO", label: "No" },
+  { value: "UNKNOWN", label: "Unknown" },
+];
+const RESTRICTIONS_OPTIONS = [
+  { value: "noneKnown", label: "None Known" },
+  { value: "hoa", label: "HOA" },
+  { value: "deed", label: "Deed Restrictions" },
+  { value: "conservation", label: "Conservation" },
+  { value: "easement", label: "Easement" },
+  { value: "landGrant", label: "Land Grant" },
+  { value: "other", label: "Other" },
+  { value: "unknown", label: "Unknown" },
 ];
 
 const inputSelectClass =
@@ -67,7 +111,13 @@ export default function Home() {
   const [acreage, setAcreage] = useState("");
   const [yearBuilt, setYearBuilt] = useState("");
   const [remodeled, setRemodeled] = useState("");
-  const [utilities, setUtilities] = useState<string[]>([]);
+  const [electric, setElectric] = useState("");
+  const [gas, setGas] = useState("");
+  const [waterSource, setWaterSource] = useState("");
+  const [wastewater, setWastewater] = useState("");
+  const [hoa, setHoa] = useState("");
+  const [restrictions, setRestrictions] = useState<string[]>([]);
+  const [restrictionsNotes, setRestrictionsNotes] = useState("");
   const [views, setViews] = useState<string[]>([]);
   const [adjacency, setAdjacency] = useState<string[]>([]);
   const [guestHouse, setGuestHouse] = useState<"yes" | "no" | "">("");
@@ -127,7 +177,13 @@ export default function Home() {
       const yearNum = parseNum(yearBuilt);
       if (yearNum !== undefined) criteria.yearBuilt = yearNum;
       if (remodeled === "YES" || remodeled === "NO" || remodeled === "UNKNOWN") criteria.remodeled = remodeled;
-      if (utilities.length > 0) criteria.utilities = utilities;
+      if (electric.trim()) criteria.electric = electric.trim();
+      if (gas.trim()) criteria.gas = gas.trim();
+      if (waterSource.trim()) criteria.waterSource = waterSource.trim();
+      if (wastewater.trim()) criteria.wastewater = wastewater.trim();
+      if (hoa === "YES" || hoa === "NO" || hoa === "UNKNOWN") criteria.hoa = hoa;
+      if (restrictions.length > 0) criteria.restrictions = restrictions;
+      if (restrictionsNotes.trim()) criteria.restrictionsNotes = restrictionsNotes.trim().slice(0, 120);
       if (views.length > 0) criteria.views = views;
       if (adjacency.length > 0) criteria.adjacency = adjacency;
       if (guestHouse === "yes") {
@@ -181,7 +237,13 @@ export default function Home() {
       setAcreage("");
       setYearBuilt("");
       setRemodeled("");
-      setUtilities([]);
+      setElectric("");
+      setGas("");
+      setWaterSource("");
+      setWastewater("");
+      setHoa("");
+      setRestrictions([]);
+      setRestrictionsNotes("");
       setViews([]);
       setAdjacency([]);
       setGuestHouse("");
@@ -393,7 +455,7 @@ export default function Home() {
 
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="beds" className="block text-xs font-medium text-neutral-600">Beds (optional)</label>
+                <label htmlFor="beds" className="block text-xs font-medium text-neutral-600">Beds</label>
                 <input
                   id="beds"
                   type="number"
@@ -405,7 +467,7 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label htmlFor="baths" className="block text-xs font-medium text-neutral-600">Baths (optional, halves ok)</label>
+                <label htmlFor="baths" className="block text-xs font-medium text-neutral-600">Baths (halves ok)</label>
                 <input
                   id="baths"
                   type="number"
@@ -418,7 +480,7 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label htmlFor="garage" className="block text-xs font-medium text-neutral-600">Garage (optional)</label>
+                <label htmlFor="garage" className="block text-xs font-medium text-neutral-600">Garage</label>
                 <select id="garage" value={garage} onChange={(e) => setGarage(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
                   <option value="">—</option>
                   {GARAGE_OPTIONS.map((v) => (
@@ -427,7 +489,7 @@ export default function Home() {
                 </select>
               </div>
               <div>
-                <label htmlFor="squareFootage" className="block text-xs font-medium text-neutral-600">Square footage (optional)</label>
+                <label htmlFor="squareFootage" className="block text-xs font-medium text-neutral-600">Square footage</label>
                 <input
                   id="squareFootage"
                   type="number"
@@ -439,7 +501,7 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label htmlFor="acreage" className="block text-xs font-medium text-neutral-600">Acreage (optional)</label>
+                <label htmlFor="acreage" className="block text-xs font-medium text-neutral-600">Acreage</label>
                 <input
                   id="acreage"
                   type="number"
@@ -452,7 +514,7 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label htmlFor="yearBuilt" className="block text-xs font-medium text-neutral-600">Year built (optional)</label>
+                <label htmlFor="yearBuilt" className="block text-xs font-medium text-neutral-600">Year built</label>
                 <input
                   id="yearBuilt"
                   type="number"
@@ -465,7 +527,7 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label htmlFor="remodeled" className="block text-xs font-medium text-neutral-600">Remodeled (optional)</label>
+                <label htmlFor="remodeled" className="block text-xs font-medium text-neutral-600">Remodeled</label>
                 <select id="remodeled" value={remodeled} onChange={(e) => setRemodeled(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
                   {REMODELED_OPTIONS.map((o) => (
                     <option key={o.value || "blank"} value={o.value}>{o.label || "—"}</option>
@@ -473,7 +535,7 @@ export default function Home() {
                 </select>
               </div>
               <div>
-                <label htmlFor="timeline" className="block text-xs font-medium text-neutral-600">Timeline (optional)</label>
+                <label htmlFor="timeline" className="block text-xs font-medium text-neutral-600">Timeline</label>
                 <select id="timeline" value={timeline} onChange={(e) => setTimeline(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
                   {TIMELINE_OPTIONS.map((o) => (
                     <option key={o.value || "blank"} value={o.value}>{o.label || "—"}</option>
@@ -482,42 +544,102 @@ export default function Home() {
               </div>
             </div>
 
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="electric" className="block text-xs font-medium text-neutral-600">Electric</label>
+                <select id="electric" value={electric} onChange={(e) => setElectric(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  <option value="">—</option>
+                  {ELECTRIC_OPTIONS.map((v) => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="gas" className="block text-xs font-medium text-neutral-600">Gas</label>
+                <select id="gas" value={gas} onChange={(e) => setGas(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  <option value="">—</option>
+                  {GAS_OPTIONS.map((v) => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="waterSource" className="block text-xs font-medium text-neutral-600">Water source</label>
+                <select id="waterSource" value={waterSource} onChange={(e) => setWaterSource(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {WATER_SOURCE_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label || "—"}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="wastewater" className="block text-xs font-medium text-neutral-600">Wastewater</label>
+                <select id="wastewater" value={wastewater} onChange={(e) => setWastewater(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {WASTEWATER_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label || "—"}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <div className="mt-4">
-              <span className="block text-xs font-medium text-neutral-600">Utilities (optional)</span>
+              <label htmlFor="hoa" className="block text-xs font-medium text-neutral-600">HOA</label>
+              <select id="hoa" value={hoa} onChange={(e) => setHoa(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                {HOA_OPTIONS.map((o) => (
+                  <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mt-4">
+              <span className="block text-xs font-medium text-neutral-600">Restrictions</span>
               <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-                {UTILITIES.map((v) => (
-                  <label key={v} className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                {RESTRICTIONS_OPTIONS.map((o) => (
+                  <label key={o.value} className="inline-flex cursor-pointer items-center gap-2 text-sm">
                     <input
                       type="checkbox"
-                      checked={utilities.includes(v)}
-                      onChange={() => setUtilities((prev) => toggleMulti(prev, v))}
+                      checked={restrictions.includes(o.value)}
+                      onChange={() => setRestrictions((prev) => toggleMulti(prev, o.value))}
                       className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
                     />
-                    {v}
+                    {o.label}
+                  </label>
+                ))}
+              </div>
+              <div className="mt-2">
+                <input
+                  id="restrictionsNotes"
+                  type="text"
+                  value={restrictionsNotes}
+                  onChange={(e) => setRestrictionsNotes(e.target.value.slice(0, 120))}
+                  maxLength={120}
+                  className={`mt-1 ${inputSelectClass}`}
+                  placeholder="Restrictions notes"
+                />
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <span className="block text-xs font-medium text-neutral-600">Views</span>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+                {VIEWS_OPTIONS.map((o) => (
+                  <label key={o.value} className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={views.includes(o.value)}
+                      onChange={() => setViews((prev) => toggleMulti(prev, o.value))}
+                      className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
+                    />
+                    {o.label}
                   </label>
                 ))}
               </div>
             </div>
 
             <div className="mt-4">
-              <span className="block text-xs font-medium text-neutral-600">Views (optional)</span>
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-                {VIEWS_OPTIONS.map((v) => (
-                  <label key={v} className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={views.includes(v)}
-                      onChange={() => setViews((prev) => toggleMulti(prev, v))}
-                      className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
-                    />
-                    {v}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <span className="block text-xs font-medium text-neutral-600">Adjacency (optional)</span>
+              <span className="block text-xs font-medium text-neutral-600">Adjacency</span>
               <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
                 {ADJACENCY_OPTIONS.map((v) => (
                   <label key={v} className="inline-flex cursor-pointer items-center gap-2 text-sm">
@@ -527,14 +649,14 @@ export default function Home() {
                       onChange={() => setAdjacency((prev) => toggleMulti(prev, v))}
                       className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
                     />
-                    {v}
+                    {ADJACENCY_LABELS[v] ?? v}
                   </label>
                 ))}
               </div>
             </div>
 
             <div className="mt-4">
-              <span className="block text-xs font-medium text-neutral-600">Guest house (optional)</span>
+              <span className="block text-xs font-medium text-neutral-600">Guest house</span>
               <div className="mt-2 flex gap-4">
                 <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
                   <input type="radio" name="guestHouse" checked={guestHouse === "yes"} onChange={() => setGuestHouse("yes")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
@@ -568,7 +690,7 @@ export default function Home() {
             </div>
 
             <div className="mt-4">
-              <span className="block text-xs font-medium text-neutral-600">Tried to sell recently? (optional)</span>
+              <span className="block text-xs font-medium text-neutral-600">Tried to sell recently?</span>
               <div className="mt-2 flex gap-4">
                 <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
                   <input type="radio" name="triedToSell" checked={hasTriedToSellRecently === "yes"} onChange={() => setHasTriedToSellRecently("yes")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
@@ -609,7 +731,7 @@ export default function Home() {
 
             <div className="mt-4 space-y-3">
               <div>
-                <label htmlFor="notes" className="block text-xs font-medium text-neutral-600">Notes <span className="font-normal text-neutral-400">(optional, max {MESSAGE_MAX})</span></label>
+                <label htmlFor="notes" className="block text-xs font-medium text-neutral-600">Notes <span className="font-normal text-neutral-400">(max {MESSAGE_MAX})</span></label>
                 <textarea
                   id="notes"
                   value={notes}
