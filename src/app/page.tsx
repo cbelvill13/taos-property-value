@@ -328,11 +328,23 @@ export default function Home() {
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Taos Home Value",
-    url: "https://taoshomevalue.com/",
-    description:
-      "Get a local, comps-based pricing snapshot for your Taos-area property. No call centers. No lead resale. Just a clear range and the data behind it.",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: "Taos Home Value",
+        url: "https://taoshomevalue.com",
+        description:
+          "Request a market-based pricing snapshot for your Taos-area property.",
+      },
+      {
+        "@type": "RealEstateAgent",
+        name: "Taos Home Value",
+        url: "https://taoshomevalue.com",
+        areaServed: "Taos County, New Mexico",
+        description:
+          "Request a market-based pricing snapshot for your Taos-area property.",
+      },
+    ],
   };
 
   return (
