@@ -4,6 +4,42 @@ import { useState } from "react";
 
 const MESSAGE_MAX = 150;
 const GARAGE_OPTIONS = ["none", "1", "2", "3+"];
+const BEDS_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "0", label: "0" },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5+" },
+];
+const GUEST_HOUSE_BEDS_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "0", label: "0" },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4+" },
+];
+const BATHS_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "0.5", label: "0.5" },
+  { value: "1", label: "1" },
+  { value: "1.5", label: "1.5" },
+  { value: "2", label: "2" },
+  { value: "2.5", label: "2.5" },
+  { value: "3", label: "3" },
+  { value: "3.5", label: "3.5" },
+  { value: "4", label: "4+" },
+];
+const ACREAGE_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "LT_1", label: "Less than 1" },
+  { value: "ONE_TO_FIVE", label: "1–5" },
+  { value: "FIVE_TO_TEN", label: "5–10" },
+  { value: "TEN_TO_TWENTY", label: "10–20" },
+  { value: "TWENTY_PLUS", label: "20+" },
+];
 const REMODELED_OPTIONS = [
   { value: "", label: "" },
   { value: "YES", label: "Yes" },
@@ -36,32 +72,28 @@ const WASTEWATER_OPTIONS = [
   { value: "Sewer", label: "Sewer" },
   { value: "Must Install", label: "Must Install" },
 ];
-const VIEWS_OPTIONS = [
-  { value: "mountain", label: "Mountain" },
-  { value: "valley", label: "Valley" },
-  { value: "sunset", label: "Sunset" },
-  { value: "river/creek", label: "River / Creek" },
-  { value: "golf", label: "Golf" },
-  { value: "none", label: "None" },
+const VIEW_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "MOUNTAIN", label: "Mountain" },
+  { value: "VALLEY", label: "Valley" },
+  { value: "SUNSET", label: "Sunset" },
+  { value: "RIVER_CREEK", label: "River / Creek" },
+  { value: "GOLF", label: "Golf" },
+  { value: "NONE", label: "None" },
 ];
 const ADJACENCY_OPTIONS = [
-  "pavedRoad",
-  "privateRoad",
-  "adjacentBLM",
-  "adjacentForest",
-  "adjacentOpenSpace",
-  "adjacentNeighborhood",
-  "other",
+  { value: "", label: "—" },
+  { value: "ADJACENT_BLM", label: "Adjacent to BLM Land" },
+  { value: "ADJACENT_NATIONAL_FOREST", label: "Adjacent to National Forest" },
+  { value: "ADJACENT_OPEN_SPACE", label: "Adjacent Open Space" },
+  { value: "OTHER", label: "Other" },
 ];
-const ADJACENCY_LABELS: Record<string, string> = {
-  pavedRoad: "Paved Road",
-  privateRoad: "Private Road",
-  adjacentBLM: "Adjacent to BLM Land",
-  adjacentForest: "Adjacent to National Forest",
-  adjacentOpenSpace: "Adjacent Open Space",
-  adjacentNeighborhood: "Adjacent Neighborhood",
-  other: "Other",
-};
+const ACCESS_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "PAVED_ROAD", label: "Paved Road" },
+  { value: "PRIVATE_ROAD", label: "Private Road" },
+  { value: "OTHER", label: "Other" },
+];
 const TIMELINE_OPTIONS = [
   { value: "", label: "" },
   { value: "just-curious", label: "Just curious" },
@@ -98,13 +130,20 @@ const WATER_RIGHTS_OPTIONS = [
   { value: "adjudicated", label: "Adjudicated / Documented" },
   { value: "other", label: "Other" },
 ];
+const BUILDING_STYLE_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "FRAME", label: "Frame" },
+  { value: "ADOBE", label: "Adobe" },
+  { value: "PUMICE", label: "Pumice" },
+  { value: "POST_AND_BEAM", label: "Post & Beam" },
+  { value: "STRAWBALE", label: "Strawbale" },
+  { value: "EARTHSHIP", label: "Earthship" },
+  { value: "MANUFACTURED", label: "Manufactured" },
+  { value: "MODULAR", label: "Modular" },
+];
 
 const inputSelectClass =
   "w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500";
-
-function toggleMulti(current: string[], value: string): string[] {
-  return current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
-}
 
 function parseNum(s: string): number | undefined {
   const n = parseFloat(s.trim());
@@ -123,6 +162,7 @@ export default function Home() {
   const [acreage, setAcreage] = useState("");
   const [yearBuilt, setYearBuilt] = useState("");
   const [remodeled, setRemodeled] = useState("");
+  const [buildingStyle, setBuildingStyle] = useState("");
   const [electric, setElectric] = useState("");
   const [gas, setGas] = useState("");
   const [waterSource, setWaterSource] = useState("");
@@ -132,8 +172,9 @@ export default function Home() {
   const [hoa, setHoa] = useState("");
   const [restrictions, setRestrictions] = useState("");
   const [restrictionsNotes, setRestrictionsNotes] = useState("");
-  const [views, setViews] = useState<string[]>([]);
-  const [adjacency, setAdjacency] = useState<string[]>([]);
+  const [view, setView] = useState("");
+  const [adjacency, setAdjacency] = useState("");
+  const [access, setAccess] = useState("");
   const [guestHouseBeds, setGuestHouseBeds] = useState("");
   const [guestHouseBaths, setGuestHouseBaths] = useState("");
   const [guestHouseSqft, setGuestHouseSqft] = useState("");
@@ -141,7 +182,6 @@ export default function Home() {
   const [priorListPrice, setPriorListPrice] = useState("");
   const [priorListStartDate, setPriorListStartDate] = useState("");
   const [priorListEndDate, setPriorListEndDate] = useState("");
-  const [priorNotes, setPriorNotes] = useState("");
   const [timeline, setTimeline] = useState("");
   const [notes, setNotes] = useState("");
   const [consent, setConsent] = useState(false);
@@ -178,18 +218,16 @@ export default function Home() {
         leadKind: "HOME_VALUE_SNAPSHOT",
         propertyAddress: address.trim(),
       };
-      const bedsNum = parseNum(beds);
-      if (bedsNum !== undefined) criteria.beds = bedsNum;
-      const bathsNum = parseNum(baths);
-      if (bathsNum !== undefined) criteria.baths = bathsNum;
+      if (beds !== "") criteria.beds = Number(beds);
+      if (baths !== "") criteria.baths = Number(baths);
       if (garage.trim()) criteria.garage = garage.trim();
       const sqftNum = parseNum(squareFootage);
       if (sqftNum !== undefined) criteria.squareFootage = sqftNum;
-      const acreageNum = parseNum(acreage);
-      if (acreageNum !== undefined) criteria.acreage = acreageNum;
+      if (acreage.trim()) criteria.acreage = acreage.trim();
       const yearNum = parseNum(yearBuilt);
       if (yearNum !== undefined) criteria.yearBuilt = yearNum;
       if (remodeled === "YES" || remodeled === "NO" || remodeled === "UNKNOWN") criteria.remodeled = remodeled;
+      if (buildingStyle.trim()) criteria.buildingStyle = buildingStyle.trim();
       if (electric.trim()) criteria.electric = electric.trim();
       if (gas.trim()) criteria.gas = gas.trim();
       if (waterSource.trim()) criteria.waterSource = waterSource.trim();
@@ -200,17 +238,19 @@ export default function Home() {
       if (hoa === "YES" || hoa === "NO" || hoa === "UNKNOWN") criteria.hoa = hoa;
       if (restrictions.trim()) criteria.restrictions = restrictions.trim();
       if (restrictionsNotes.trim()) criteria.restrictionsNotes = restrictionsNotes.trim().slice(0, 120);
-      if (views.length > 0) criteria.views = views;
-      if (adjacency.length > 0) criteria.adjacency = adjacency;
-      const ghBeds = parseNum(guestHouseBeds);
-      const ghBaths = parseNum(guestHouseBaths);
+      if (view.trim()) criteria.view = view.trim();
+      if (adjacency.trim()) criteria.adjacency = adjacency.trim();
+      if (access.trim()) criteria.access = access.trim();
       const ghSqft = parseNum(guestHouseSqft);
-      if (ghBeds !== undefined || ghBaths !== undefined || ghSqft !== undefined) {
+      const hasGhBeds = guestHouseBeds.trim() !== "";
+      const hasGhBaths = guestHouseBaths.trim() !== "";
+      const hasGhSqft = ghSqft !== undefined;
+      if (hasGhBeds || hasGhBaths || hasGhSqft) {
         criteria.guestHouse = {
           has: true,
-          ...(ghBeds !== undefined && { beds: ghBeds }),
-          ...(ghBaths !== undefined && { baths: ghBaths }),
-          ...(ghSqft !== undefined && { sqft: ghSqft }),
+          ...(hasGhBeds && { beds: Number(guestHouseBeds) }),
+          ...(hasGhBaths && { baths: Number(guestHouseBaths) }),
+          ...(hasGhSqft && { sqft: ghSqft }),
         };
       }
       if (hasTriedToSellRecently === "yes") {
@@ -219,7 +259,6 @@ export default function Home() {
           ...(parseNum(priorListPrice) !== undefined && { priorListPrice: parseNum(priorListPrice) }),
           ...(priorListStartDate.trim() && { startDate: priorListStartDate.trim() }),
           ...(priorListEndDate.trim() && { endDate: priorListEndDate.trim() }),
-          ...(priorNotes.trim() && { notes: priorNotes.trim() }),
         };
       } else if (hasTriedToSellRecently === "no") {
         criteria.triedToSellRecently = { has: false };
@@ -254,6 +293,7 @@ export default function Home() {
       setAcreage("");
       setYearBuilt("");
       setRemodeled("");
+      setBuildingStyle("");
       setElectric("");
       setGas("");
       setWaterSource("");
@@ -263,8 +303,9 @@ export default function Home() {
       setHoa("");
       setRestrictions("");
       setRestrictionsNotes("");
-      setViews([]);
-      setAdjacency([]);
+      setView("");
+      setAdjacency("");
+      setAccess("");
       setGuestHouseBeds("");
       setGuestHouseBaths("");
       setGuestHouseSqft("");
@@ -272,7 +313,6 @@ export default function Home() {
       setPriorListPrice("");
       setPriorListStartDate("");
       setPriorListEndDate("");
-      setPriorNotes("");
       setTimeline("");
       setNotes("");
       setConsent(false);
@@ -474,28 +514,19 @@ export default function Home() {
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="beds" className="block text-xs font-medium text-neutral-600">Beds</label>
-                <input
-                  id="beds"
-                  type="number"
-                  min={0}
-                  value={beds}
-                  onChange={(e) => setBeds(e.target.value)}
-                  className={`mt-1 ${inputSelectClass}`}
-                  placeholder="e.g. 3"
-                />
+                <select id="beds" value={beds} onChange={(e) => setBeds(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {BEDS_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="baths" className="block text-xs font-medium text-neutral-600">Baths (halves ok)</label>
-                <input
-                  id="baths"
-                  type="number"
-                  min={0}
-                  step={0.5}
-                  value={baths}
-                  onChange={(e) => setBaths(e.target.value)}
-                  className={`mt-1 ${inputSelectClass}`}
-                  placeholder="e.g. 2.5"
-                />
+                <select id="baths" value={baths} onChange={(e) => setBaths(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {BATHS_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="garage" className="block text-xs font-medium text-neutral-600">Garage</label>
@@ -510,8 +541,9 @@ export default function Home() {
                 <label htmlFor="squareFootage" className="block text-xs font-medium text-neutral-600">Square footage</label>
                 <input
                   id="squareFootage"
-                  type="number"
-                  min={0}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={squareFootage}
                   onChange={(e) => setSquareFootage(e.target.value)}
                   className={`mt-1 ${inputSelectClass}`}
@@ -523,38 +555,41 @@ export default function Home() {
                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div>
                     <label htmlFor="guestHouseBeds" className="block text-xs text-neutral-500">Guest house beds</label>
-                    <input id="guestHouseBeds" type="number" min={0} value={guestHouseBeds} onChange={(e) => setGuestHouseBeds(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                    <select id="guestHouseBeds" value={guestHouseBeds} onChange={(e) => setGuestHouseBeds(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                      {GUEST_HOUSE_BEDS_OPTIONS.map((o) => (
+                        <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label htmlFor="guestHouseBaths" className="block text-xs text-neutral-500">Guest house baths</label>
-                    <input id="guestHouseBaths" type="number" min={0} step={0.5} value={guestHouseBaths} onChange={(e) => setGuestHouseBaths(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                    <select id="guestHouseBaths" value={guestHouseBaths} onChange={(e) => setGuestHouseBaths(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                      {BATHS_OPTIONS.map((o) => (
+                        <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label htmlFor="guestHouseSqft" className="block text-xs text-neutral-500">Guest house sq ft</label>
-                    <input id="guestHouseSqft" type="number" min={0} value={guestHouseSqft} onChange={(e) => setGuestHouseSqft(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                    <input id="guestHouseSqft" type="text" inputMode="numeric" pattern="[0-9]*" value={guestHouseSqft} onChange={(e) => setGuestHouseSqft(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
                   </div>
                 </div>
               </div>
               <div>
                 <label htmlFor="acreage" className="block text-xs font-medium text-neutral-600">Acreage</label>
-                <input
-                  id="acreage"
-                  type="number"
-                  min={0}
-                  step={0.1}
-                  value={acreage}
-                  onChange={(e) => setAcreage(e.target.value)}
-                  className={`mt-1 ${inputSelectClass}`}
-                  placeholder="e.g. 1.5"
-                />
+                <select id="acreage" value={acreage} onChange={(e) => setAcreage(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {ACREAGE_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="yearBuilt" className="block text-xs font-medium text-neutral-600">Year built</label>
                 <input
                   id="yearBuilt"
-                  type="number"
-                  min={1800}
-                  max={new Date().getFullYear() + 1}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={yearBuilt}
                   onChange={(e) => setYearBuilt(e.target.value)}
                   className={`mt-1 ${inputSelectClass}`}
@@ -566,6 +601,22 @@ export default function Home() {
                 <select id="remodeled" value={remodeled} onChange={(e) => setRemodeled(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
                   {REMODELED_OPTIONS.map((o) => (
                     <option key={o.value || "blank"} value={o.value}>{o.label || "—"}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="buildingStyle" className="block text-xs font-medium text-neutral-600">Building Style</label>
+                <select id="buildingStyle" value={buildingStyle} onChange={(e) => setBuildingStyle(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {BUILDING_STYLE_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="access" className="block text-xs font-medium text-neutral-600">Access</label>
+                <select id="access" value={access} onChange={(e) => setAccess(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {ACCESS_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label}</option>
                   ))}
                 </select>
               </div>
@@ -644,9 +695,9 @@ export default function Home() {
                 </label>
                 <input
                   id="irrigatedAcres"
-                  type="number"
-                  min={0}
-                  step={0.01}
+                  type="text"
+                  inputMode="decimal"
+                  pattern="[0-9]*(\\.[0-9]*)?"
                   value={irrigatedAcres}
                   onChange={(e) => setIrrigatedAcres(e.target.value)}
                   className={`mt-1 ${inputSelectClass}`}
@@ -689,37 +740,22 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-4">
-              <span className="block text-xs font-medium text-neutral-600">Views</span>
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-                {VIEWS_OPTIONS.map((o) => (
-                  <label key={o.value} className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={views.includes(o.value)}
-                      onChange={() => setViews((prev) => toggleMulti(prev, o.value))}
-                      className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
-                    />
-                    {o.label}
-                  </label>
-                ))}
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="view" className="block text-xs font-medium text-neutral-600">View</label>
+                <select id="view" value={view} onChange={(e) => setView(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {VIEW_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
               </div>
-            </div>
-
-            <div className="mt-4">
-              <span className="block text-xs font-medium text-neutral-600">Adjacency</span>
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-                {ADJACENCY_OPTIONS.map((v) => (
-                  <label key={v} className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={adjacency.includes(v)}
-                      onChange={() => setAdjacency((prev) => toggleMulti(prev, v))}
-                      className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
-                    />
-                    {ADJACENCY_LABELS[v] ?? v}
-                  </label>
-                ))}
+              <div>
+                <label htmlFor="adjacency" className="block text-xs font-medium text-neutral-600">Adjacency</label>
+                <select id="adjacency" value={adjacency} onChange={(e) => setAdjacency(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {ADJACENCY_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -743,7 +779,7 @@ export default function Home() {
                 <div className="mt-3 space-y-3">
                   <div>
                     <label htmlFor="priorListPrice" className="block text-xs text-neutral-500">Prior list price</label>
-                    <input id="priorListPrice" type="number" min={0} value={priorListPrice} onChange={(e) => setPriorListPrice(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                    <input id="priorListPrice" type="text" inputMode="numeric" pattern="[0-9]*" value={priorListPrice} onChange={(e) => setPriorListPrice(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
                   </div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
@@ -754,10 +790,6 @@ export default function Home() {
                       <label htmlFor="priorListEndDate" className="block text-xs text-neutral-500">List end date</label>
                       <input id="priorListEndDate" type="date" value={priorListEndDate} onChange={(e) => setPriorListEndDate(e.target.value)} className={`mt-1 ${inputSelectClass}`} />
                     </div>
-                  </div>
-                  <div>
-                    <label htmlFor="priorNotes" className="block text-xs text-neutral-500">Notes</label>
-                    <input id="priorNotes" type="text" value={priorNotes} onChange={(e) => setPriorNotes(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="Brief notes" />
                   </div>
                 </div>
               )}

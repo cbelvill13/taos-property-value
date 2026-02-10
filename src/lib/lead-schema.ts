@@ -11,9 +11,11 @@ export type HomeValueCriteria = {
   acreage?: number;
   yearBuilt?: number;
   remodeled?: "YES" | "NO" | "UNKNOWN";
+  buildingStyle?: "FRAME" | "ADOBE" | "PUMICE" | "POST_AND_BEAM" | "STRAWBALE" | "EARTHSHIP" | "MANUFACTURED" | "MODULAR";
   utilities?: string[];
-  views?: string[];
-  adjacency?: string[];
+  view?: "MOUNTAIN" | "VALLEY" | "SUNSET" | "RIVER_CREEK" | "GOLF" | "NONE";
+  adjacency?: "ADJACENT_BLM" | "ADJACENT_NATIONAL_FOREST" | "ADJACENT_OPEN_SPACE" | "OTHER";
+  access?: "PAVED_ROAD" | "PRIVATE_ROAD" | "OTHER";
   guestHouse?: { has: boolean; beds?: number; baths?: number; sqft?: number };
   triedToSellRecently?: {
     has: boolean;
