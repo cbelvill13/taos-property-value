@@ -87,6 +87,17 @@ const RESTRICTIONS_OPTIONS = [
   { value: "other", label: "Other" },
   { value: "unknown", label: "Unknown" },
 ];
+const WATER_RIGHTS_OPTIONS = [
+  { value: "", label: "—" },
+  { value: "unknown", label: "Unknown" },
+  { value: "none", label: "None" },
+  { value: "surface", label: "Surface" },
+  { value: "wellDomestic", label: "Domestic Well" },
+  { value: "wellShared", label: "Shared Well" },
+  { value: "acequia", label: "Acequia / Ditch Rights" },
+  { value: "adjudicated", label: "Adjudicated / Documented" },
+  { value: "other", label: "Other" },
+];
 
 const inputSelectClass =
   "w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500";
@@ -116,6 +127,8 @@ export default function Home() {
   const [gas, setGas] = useState("");
   const [waterSource, setWaterSource] = useState("");
   const [wastewater, setWastewater] = useState("");
+  const [waterRights, setWaterRights] = useState("");
+  const [irrigatedAcres, setIrrigatedAcres] = useState("");
   const [hoa, setHoa] = useState("");
   const [restrictions, setRestrictions] = useState("");
   const [restrictionsNotes, setRestrictionsNotes] = useState("");
@@ -182,6 +195,9 @@ export default function Home() {
       if (gas.trim()) criteria.gas = gas.trim();
       if (waterSource.trim()) criteria.waterSource = waterSource.trim();
       if (wastewater.trim()) criteria.wastewater = wastewater.trim();
+      if (waterRights.trim()) criteria.waterRights = waterRights.trim();
+      const irrigatedNum = parseNum(irrigatedAcres);
+      if (irrigatedNum !== undefined) criteria.irrigatedAcres = irrigatedNum;
       if (hoa === "YES" || hoa === "NO" || hoa === "UNKNOWN") criteria.hoa = hoa;
       if (restrictions.trim()) criteria.restrictions = restrictions.trim();
       if (restrictionsNotes.trim()) criteria.restrictionsNotes = restrictionsNotes.trim().slice(0, 120);
@@ -242,6 +258,8 @@ export default function Home() {
       setGas("");
       setWaterSource("");
       setWastewater("");
+      setWaterRights("");
+      setIrrigatedAcres("");
       setHoa("");
       setRestrictions("");
       setRestrictionsNotes("");
@@ -582,6 +600,42 @@ export default function Home() {
                     <option key={o.value || "blank"} value={o.value}>{o.label || "—"}</option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="waterRights" className="block text-xs font-medium text-neutral-600">
+                  Water Rights
+                </label>
+                <select
+                  id="waterRights"
+                  value={waterRights}
+                  onChange={(e) => setWaterRights(e.target.value)}
+                  className={`mt-1 ${inputSelectClass}`}
+                >
+                  {WATER_RIGHTS_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="irrigatedAcres" className="block text-xs font-medium text-neutral-600">
+                  Irrigated Acres
+                </label>
+                <input
+                  id="irrigatedAcres"
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  value={irrigatedAcres}
+                  onChange={(e) => setIrrigatedAcres(e.target.value)}
+                  className={`mt-1 ${inputSelectClass}`}
+                  placeholder="—"
+                />
               </div>
             </div>
 
