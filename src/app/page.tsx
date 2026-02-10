@@ -223,20 +223,53 @@ export default function Home() {
 
       <section className="mx-auto max-w-3xl px-4 py-6">
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Get a local pricing snapshot for your Taos-area property — free.
+          Get a local pricing snapshot for your Taos-area property.
         </h1>
-        <p className="mt-3 text-base leading-relaxed text-neutral-700">
-          Share your property details and we’ll send you a comps-based value range and the data
-          behind it — delivered by a local Taos brokerage, not a call center. One human reply, no
-          lead resale, no paid placements.
+        <p className="mt-2 text-base leading-relaxed text-neutral-600 sm:text-lg">
+          A real valuation is more than three recent comps.
+          <br />
+          This is a market-based pricing range built from how properties are actually moving right now.
+        </p>
+
+        <p className="mt-6 text-base leading-relaxed text-neutral-700">
+          Comps are the starting point — not the answer.
         </p>
         <p className="mt-3 text-base leading-relaxed text-neutral-700">
-          Unlike syndicated real estate sites, your request is never sold, routed, or auctioned.
-          No call-center agents, no surprise follow-ups. Your info stays local and transparent.
+          A credible value range accounts for more than what sold most recently. It looks at what’s active, what’s pending, what’s sitting, how pricing has shifted, and how buyers are responding in today’s market.
         </p>
         <p className="mt-3 text-base leading-relaxed text-neutral-700">
-          This service is for Taos-area owners who want a clear, accurate pricing snapshot — based
-          on real comps, not advertising budgets.
+          That broader context is what turns raw data into a number that holds up once buyers start comparing, inspecting, and negotiating.
+        </p>
+
+        <h2 className="mt-8 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+          What I’m actually looking at
+        </h2>
+        <p className="mt-3 text-base leading-relaxed text-neutral-700">
+          When I evaluate a property, I’m not just pulling recent sales. I’m weighing:
+        </p>
+        <ul className="mt-3 list-disc space-y-1 pl-5 text-base leading-relaxed text-neutral-700">
+          <li>Current inventory pressure in your price range</li>
+          <li>How long similar homes are taking to sell</li>
+          <li>Where listings started vs. where they actually closed</li>
+          <li>Price reductions, expirations, and quiet withdrawals</li>
+          <li>Property-specific factors buyers price in immediately</li>
+          <li>Location details that matter in this market — and the ones that don’t</li>
+        </ul>
+        <p className="mt-3 text-base leading-relaxed text-neutral-700">
+          The goal isn’t a flattering number. It’s a range that reflects how buyers are behaving right now.
+        </p>
+
+        <h2 className="mt-8 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+          Why this isn’t an instant estimate
+        </h2>
+        <p className="mt-3 text-base leading-relaxed text-neutral-700">
+          This isn’t an automated guess and it isn’t a one-size-fits-all number.
+        </p>
+        <p className="mt-3 text-base leading-relaxed text-neutral-700">
+          Pricing works when it’s based on patterns across many local outcomes — not just a handful of recent sales. Seeing what sold is important. Seeing what didn’t, how long it took, and why buyers hesitated is just as important.
+        </p>
+        <p className="mt-3 text-base leading-relaxed text-neutral-700">
+          That wider lens is what produces a pricing range you can actually use.
         </p>
 
         <p className="mt-4 text-sm text-neutral-600">
@@ -248,6 +281,13 @@ export default function Home() {
           >
             Looking for land instead? Try Taos Land Finder →
           </a>
+        </p>
+
+        <h2 className="mt-8 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+          Request a pricing snapshot
+        </h2>
+        <p className="mt-2 text-base leading-relaxed text-neutral-700">
+          Share a few details about the property and your timing. I’ll follow up with a value range and the reasoning behind it.
         </p>
 
         {success ? (
