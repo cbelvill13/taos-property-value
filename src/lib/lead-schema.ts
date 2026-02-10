@@ -9,7 +9,7 @@ export type LeadCriteria = {
 };
 
 export type LeadMeta = {
-  source: "taoshomefinder";
+  source: "taoshomevalue";
   createdAt: string; // ISO
   userAgent?: string;
   referrer?: string;
@@ -108,7 +108,7 @@ export function validateLead(payload: unknown): {
   // Meta
   const metaRaw = raw?.meta as Record<string, unknown> | undefined;
   const meta: LeadMeta = {
-    source: "taoshomefinder",
+    source: "taoshomevalue",
     createdAt: typeof metaRaw?.createdAt === "string" ? metaRaw.createdAt : new Date().toISOString(),
     userAgent: typeof metaRaw?.userAgent === "string" ? metaRaw.userAgent : undefined,
     referrer: typeof metaRaw?.referrer === "string" ? metaRaw.referrer : undefined,

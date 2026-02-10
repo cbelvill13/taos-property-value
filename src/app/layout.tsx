@@ -8,11 +8,11 @@ const dmSans = DM_Sans({
   variable: "--font-dm-sans",
 });
 
-const SITE_NAME = "Taos Home Finder";
-const SITE_URL = "https://taoshomefinder.com";
-const TITLE = "Taos Home Finder | Personalized Taos NM Property Alerts";
+const SITE_NAME = "Taos Home Value";
+const SITE_URL = "https://taoshomevalue.com";
+const TITLE = "Taos Home Value | Request a Local Pricing Snapshot";
 const DESCRIPTION =
-  "Get personalized alerts for Taos NM homes and properties. Local Taos brokerage. No lead sales, no paid placements — just accurate listings matched to your criteria.";
+  "Get a local, comps-based pricing snapshot for your Taos-area property. No call centers. No lead resale. Just a clear range and the data behind it.";
 const OG_IMAGE = `${SITE_URL}/images/136-3x1hero.jpg`;
 
 export const metadata: Metadata = {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Taos Home Finder — Taos NM property alerts",
+        alt: "Taos Home Value — local pricing snapshot",
       },
     ],
   },

@@ -156,10 +156,10 @@ export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Taos Home Finder",
-    url: "https://taoshomefinder.com/",
+    name: "Taos Home Value",
+    url: "https://taoshomevalue.com/",
     description:
-      "Get personalized alerts for Taos NM homes and properties. Local Taos brokerage. No lead sales, no paid placements — just accurate listings matched to your criteria.",
+      "Get a local, comps-based pricing snapshot for your Taos-area property. No call centers. No lead resale. Just a clear range and the data behind it.",
   };
 
   return (
@@ -188,7 +188,7 @@ export default function Home() {
                   {/* Site identity masthead — not a link */}
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-wide text-white sm:text-sm sm:tracking-widest">
-                      TaosHomeFinder.com
+                      TaosHomeValue.com
                     </div>
                     <div className="mt-0.5 text-[10px] font-medium text-white/80 sm:text-xs">
                       Taos · NM
@@ -223,22 +223,20 @@ export default function Home() {
 
       <section className="mx-auto max-w-3xl px-4 py-6">
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Get personalized Taos-area property alerts — free.
+          Get a local pricing snapshot for your Taos-area property — free.
         </h1>
         <p className="mt-3 text-base leading-relaxed text-neutral-700">
-          Tell us what you’re looking for in the Taos, New Mexico real estate market, and you’ll
-          receive personalized property alerts whenever relevant homes, land, or listings become
-          available — delivered directly by a local Taos brokerage, not a national lead platform.
+          Share your property details and we’ll send you a comps-based value range and the data
+          behind it — delivered by a local Taos brokerage, not a call center. One human reply, no
+          lead resale, no paid placements.
         </p>
         <p className="mt-3 text-base leading-relaxed text-neutral-700">
-          Unlike syndicated real estate websites, your request is never sold, routed, or auctioned.
-          There are no paid placements, no call-center agents, and no surprise follow-ups. Your
-          search stays local, transparent, and focused on what’s actually available in Taos and
-          surrounding areas.
+          Unlike syndicated real estate sites, your request is never sold, routed, or auctioned.
+          No call-center agents, no surprise follow-ups. Your info stays local and transparent.
         </p>
         <p className="mt-3 text-base leading-relaxed text-neutral-700">
-          This service is designed for buyers who want a clear, accurate view of Taos-area homes and
-          properties, with alerts based on real criteria — not advertising budgets.
+          This service is for Taos-area owners who want a clear, accurate pricing snapshot — based
+          on real comps, not advertising budgets.
         </p>
 
         <p className="mt-4 text-sm text-neutral-600">
@@ -254,7 +252,7 @@ export default function Home() {
 
         {success ? (
           <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-800">
-            <p className="font-medium">Got it — I’ll send matches.</p>
+            <p className="font-medium">Got it — I’ll send your pricing snapshot.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 rounded-2xl border bg-white p-4">
@@ -468,7 +466,7 @@ export default function Home() {
             <div className="mt-4 space-y-3">
               <div>
                 <label htmlFor="message" className="block text-xs font-medium text-neutral-600">
-                  Message <span className="font-normal text-neutral-400">(optional, max 150)</span>
+                  Property details (address, beds/baths, condition, upgrades, timeline) <span className="font-normal text-neutral-400">(optional, max 150)</span>
                 </label>
                 <textarea
                   id="message"
@@ -477,7 +475,7 @@ export default function Home() {
                   maxLength={150}
                   rows={2}
                   className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-                  placeholder="Anything you’d like Chad to know?"
+                  placeholder="Example: 123 Canyon Rd, 3/2, ~1,650 sqft, renovated kitchen, thinking about selling this summer."
                 />
                 <p className="mt-0.5 text-right text-xs text-neutral-500">
                   {message.length} / 150
@@ -506,7 +504,7 @@ export default function Home() {
               disabled={!canSubmit || loading}
               className="mt-4 w-full rounded-xl border border-neutral-800 bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Sending…" : "Send me matches"}
+              {loading ? "Sending…" : "Request pricing snapshot"}
             </button>
           </form>
         )}
