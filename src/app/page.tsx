@@ -134,7 +134,6 @@ export default function Home() {
   const [restrictionsNotes, setRestrictionsNotes] = useState("");
   const [views, setViews] = useState<string[]>([]);
   const [adjacency, setAdjacency] = useState<string[]>([]);
-  const [guestHouse, setGuestHouse] = useState<"yes" | "no" | "">("");
   const [guestHouseBeds, setGuestHouseBeds] = useState("");
   const [guestHouseBaths, setGuestHouseBaths] = useState("");
   const [guestHouseSqft, setGuestHouseSqft] = useState("");
@@ -203,15 +202,16 @@ export default function Home() {
       if (restrictionsNotes.trim()) criteria.restrictionsNotes = restrictionsNotes.trim().slice(0, 120);
       if (views.length > 0) criteria.views = views;
       if (adjacency.length > 0) criteria.adjacency = adjacency;
-      if (guestHouse === "yes") {
+      const ghBeds = parseNum(guestHouseBeds);
+      const ghBaths = parseNum(guestHouseBaths);
+      const ghSqft = parseNum(guestHouseSqft);
+      if (ghBeds !== undefined || ghBaths !== undefined || ghSqft !== undefined) {
         criteria.guestHouse = {
           has: true,
-          ...(parseNum(guestHouseBeds) !== undefined && { beds: parseNum(guestHouseBeds) }),
-          ...(parseNum(guestHouseBaths) !== undefined && { baths: parseNum(guestHouseBaths) }),
-          ...(parseNum(guestHouseSqft) !== undefined && { sqft: parseNum(guestHouseSqft) }),
+          ...(ghBeds !== undefined && { beds: ghBeds }),
+          ...(ghBaths !== undefined && { baths: ghBaths }),
+          ...(ghSqft !== undefined && { sqft: ghSqft }),
         };
-      } else if (guestHouse === "no") {
-        criteria.guestHouse = { has: false };
       }
       if (hasTriedToSellRecently === "yes") {
         criteria.triedToSellRecently = {
@@ -265,7 +265,6 @@ export default function Home() {
       setRestrictionsNotes("");
       setViews([]);
       setAdjacency([]);
-      setGuestHouse("");
       setGuestHouseBeds("");
       setGuestHouseBaths("");
       setGuestHouseSqft("");
@@ -521,36 +520,20 @@ export default function Home() {
               </div>
               <div className="sm:col-span-2">
                 <span className="block text-xs font-medium text-neutral-600">Guest house</span>
-                <div className="mt-2 flex gap-4">
-                  <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input type="radio" name="guestHouse" checked={guestHouse === "yes"} onChange={() => setGuestHouse("yes")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
-                    Yes
-                  </label>
-                  <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input type="radio" name="guestHouse" checked={guestHouse === "no"} onChange={() => setGuestHouse("no")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
-                    No
-                  </label>
-                  <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input type="radio" name="guestHouse" checked={guestHouse === ""} onChange={() => setGuestHouse("")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
-                    —
-                  </label>
-                </div>
-                {guestHouse === "yes" && (
-                  <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <div>
-                      <label htmlFor="guestHouseBeds" className="block text-xs text-neutral-500">Guest house beds</label>
-                      <input id="guestHouseBeds" type="number" min={0} value={guestHouseBeds} onChange={(e) => setGuestHouseBeds(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
-                    </div>
-                    <div>
-                      <label htmlFor="guestHouseBaths" className="block text-xs text-neutral-500">Guest house baths</label>
-                      <input id="guestHouseBaths" type="number" min={0} step={0.5} value={guestHouseBaths} onChange={(e) => setGuestHouseBaths(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
-                    </div>
-                    <div>
-                      <label htmlFor="guestHouseSqft" className="block text-xs text-neutral-500">Guest house sq ft</label>
-                      <input id="guestHouseSqft" type="number" min={0} value={guestHouseSqft} onChange={(e) => setGuestHouseSqft(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
-                    </div>
+                <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div>
+                    <label htmlFor="guestHouseBeds" className="block text-xs text-neutral-500">Guest house beds</label>
+                    <input id="guestHouseBeds" type="number" min={0} value={guestHouseBeds} onChange={(e) => setGuestHouseBeds(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
                   </div>
-                )}
+                  <div>
+                    <label htmlFor="guestHouseBaths" className="block text-xs text-neutral-500">Guest house baths</label>
+                    <input id="guestHouseBaths" type="number" min={0} step={0.5} value={guestHouseBaths} onChange={(e) => setGuestHouseBaths(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                  </div>
+                  <div>
+                    <label htmlFor="guestHouseSqft" className="block text-xs text-neutral-500">Guest house sq ft</label>
+                    <input id="guestHouseSqft" type="number" min={0} value={guestHouseSqft} onChange={(e) => setGuestHouseSqft(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                  </div>
+                </div>
               </div>
               <div>
                 <label htmlFor="acreage" className="block text-xs font-medium text-neutral-600">Acreage</label>
