@@ -1,5 +1,30 @@
 /** Lead intake payload and validation. No external libs. */
 
+/** Home value snapshot intake criteria (taoshomevalue.com). */
+export type HomeValueCriteria = {
+  leadKind: "HOME_VALUE_SNAPSHOT";
+  propertyAddress: string;
+  beds?: number;
+  baths?: number;
+  garage?: string;
+  squareFootage?: number;
+  acreage?: number;
+  yearBuilt?: number;
+  remodeled?: "YES" | "NO" | "UNKNOWN";
+  utilities?: string[];
+  views?: string[];
+  adjacency?: string[];
+  guestHouse?: { has: boolean; beds?: number; baths?: number; sqft?: number };
+  triedToSellRecently?: {
+    has: boolean;
+    priorListPrice?: number;
+    startDate?: string;
+    endDate?: string;
+    notes?: string;
+  };
+  timeline?: string;
+};
+
 export type LeadCriteria = {
   beds: string[];
   baths: string[];

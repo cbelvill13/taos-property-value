@@ -26,17 +26,25 @@ function validateBody(body: unknown): { ok: true; payload: Record<string, unknow
     }
     message = raw.message.slice(0, MESSAGE_MAX);
   }
-  const criteria =
-    raw.criteria != null && typeof raw.criteria === "object" && !Array.isArray(raw.criteria)
-      ? (raw.criteria as Record<string, unknown>)
-      : undefined;
+  if (raw.criteria == null) {
+    return { ok: false, error: "criteria is required." };
+  }
+  if (typeof raw.criteria !== "object" || Array.isArray(raw.criteria)) {
+    return { ok: false, error: "criteria must be a plain object." };
+  }
+  const criteria = raw.criteria as Record<string, unknown>;
+  const propertyAddress =
+    typeof criteria.propertyAddress === "string" ? (criteria.propertyAddress as string).trim() : "";
+  if (!propertyAddress) {
+    return { ok: false, error: "criteria.propertyAddress is required and must be a non-empty string." };
+  }
   const payload: Record<string, unknown> = {
     fullName: (fullName as string).trim(),
     email: (email as string).trim(),
     phone: (phone as string).trim(),
     source: "taoshomevalue.com",
   };
-  if (criteria !== undefined) payload.criteria = criteria;
+  payload.criteria = criteria;
   if (message !== undefined) payload.message = message;
   return { ok: true, payload };
 }

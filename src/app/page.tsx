@@ -1,59 +1,86 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 
-const BEDS = ["Any", "1+", "2+", "3+", "4+", "5+"];
-const BATHS = ["Any", "1+", "2+", "3+"];
-const ACREAGE = ["Any", "<1 acre", "1–5", "5–10", "10–20", "20+"];
-const PRICE = ["Any", "<$300k", "$300–500k", "$500–750k", "$750k–$1M", "$1M+"];
-const AREAS = [
-  "Angel Fire",
-  "Arroyo Seco",
-  "Blueberry Hill",
-  "El Prado",
-  "High Road",
-  "Questa",
-  "Ranchos",
-  "Red River",
-  "Taos",
-  "Taos Ski Valley",
-];
-const GUEST_HOUSE = ["Any", "Yes", "No"];
-const GARAGE = ["Any", "Yes", "No"];
 const MESSAGE_MAX = 150;
-const AREAS_OTHER_MAX = 20;
+const GARAGE_OPTIONS = ["none", "1", "2", "3+"];
+const REMODELED_OPTIONS = [
+  { value: "", label: "" },
+  { value: "YES", label: "Yes" },
+  { value: "NO", label: "No" },
+  { value: "UNKNOWN", label: "Unknown" },
+];
+const UTILITIES = [
+  "electric",
+  "naturalGas",
+  "propane",
+  "well",
+  "communityWater",
+  "septic",
+  "sewer",
+  "internetFiber",
+  "internetDSL",
+  "internetStarlink",
+  "other",
+];
+const VIEWS_OPTIONS = ["mountain", "valley", "sunset", "river/creek", "golf", "none", "other"];
+const ADJACENCY_OPTIONS = [
+  "pavedRoad",
+  "privateRoad",
+  "highwayNoise",
+  "adjacentBLM",
+  "adjacentForest",
+  "adjacentOpenSpace",
+  "adjacentNeighborhood",
+  "other",
+];
+const TIMELINE_OPTIONS = [
+  { value: "", label: "" },
+  { value: "just-curious", label: "Just curious" },
+  { value: "within-3-months", label: "Within 3 months" },
+  { value: "within-6-months", label: "Within 6 months" },
+  { value: "within-12-months", label: "Within 12 months" },
+  { value: "flexible", label: "Flexible" },
+];
 
 const inputSelectClass =
   "w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500";
 
-function getUtm(): { source?: string; medium?: string; campaign?: string; content?: string; term?: string } {
-  if (typeof window === "undefined") return {};
-  const u = new URL(window.location.href);
-  const get = (k: string) => u.searchParams.get(k) ?? undefined;
-  return {
-    source: get("utm_source") ?? undefined,
-    medium: get("utm_medium") ?? undefined,
-    campaign: get("utm_campaign") ?? undefined,
-    content: get("utm_content") ?? undefined,
-    term: get("utm_term") ?? undefined,
-  };
+function toggleMulti(current: string[], value: string): string[] {
+  return current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
+}
+
+function parseNum(s: string): number | undefined {
+  const n = parseFloat(s.trim());
+  return Number.isFinite(n) ? n : undefined;
 }
 
 export default function Home() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [beds, setBeds] = useState("Any");
-  const [baths, setBaths] = useState("Any");
-  const [acreage, setAcreage] = useState("Any");
-  const [price, setPrice] = useState("Any");
-  const [guestHouse, setGuestHouse] = useState("Any");
-  const [garage, setGarage] = useState("Any");
-  const [areas, setAreas] = useState<string[]>([]);
-  const [areasOther, setAreasOther] = useState("");
-  const [areasDropdownOpen, setAreasDropdownOpen] = useState(false);
-  const areasDropdownRef = useRef<HTMLDivElement>(null);
-  const [message, setMessage] = useState("");
+  const [address, setAddress] = useState("");
+  const [beds, setBeds] = useState("");
+  const [baths, setBaths] = useState("");
+  const [garage, setGarage] = useState("");
+  const [squareFootage, setSquareFootage] = useState("");
+  const [acreage, setAcreage] = useState("");
+  const [yearBuilt, setYearBuilt] = useState("");
+  const [remodeled, setRemodeled] = useState("");
+  const [utilities, setUtilities] = useState<string[]>([]);
+  const [views, setViews] = useState<string[]>([]);
+  const [adjacency, setAdjacency] = useState<string[]>([]);
+  const [guestHouse, setGuestHouse] = useState<"yes" | "no" | "">("");
+  const [guestHouseBeds, setGuestHouseBeds] = useState("");
+  const [guestHouseBaths, setGuestHouseBaths] = useState("");
+  const [guestHouseSqft, setGuestHouseSqft] = useState("");
+  const [hasTriedToSellRecently, setHasTriedToSellRecently] = useState<"yes" | "no" | "">("");
+  const [priorListPrice, setPriorListPrice] = useState("");
+  const [priorListStartDate, setPriorListStartDate] = useState("");
+  const [priorListEndDate, setPriorListEndDate] = useState("");
+  const [priorNotes, setPriorNotes] = useState("");
+  const [timeline, setTimeline] = useState("");
+  const [notes, setNotes] = useState("");
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -63,27 +90,9 @@ export default function Home() {
     fullName.trim().length > 0 &&
     email.trim().length > 0 &&
     phone.replace(/\D/g, "").length >= 10 &&
+    address.trim().length > 0 &&
     consent &&
-    message.length <= MESSAGE_MAX;
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (areasDropdownRef.current && !areasDropdownRef.current.contains(event.target as Node)) {
-        setAreasDropdownOpen(false);
-      }
-    }
-    if (areasDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [areasDropdownOpen]);
-
-  const toggleArea = (value: string) => {
-    if (value === "Other" && areas.includes("Other")) setAreasOther("");
-    setAreas((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-    );
-  };
+    notes.length <= MESSAGE_MAX;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +102,8 @@ export default function Home() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) err.email = "Please enter a valid email address.";
     if (!phone.trim()) err.phone = "Phone is required.";
     else if (phone.replace(/\D/g, "").length < 10) err.phone = "Please enter a valid phone number (at least 10 digits).";
-    if (message.length > MESSAGE_MAX) err.message = `Message must be at most ${MESSAGE_MAX} characters.`;
+    if (!address.trim()) err.address = "Property address is required.";
+    if (notes.length > MESSAGE_MAX) err.notes = `Notes must be at most ${MESSAGE_MAX} characters.`;
     if (!consent) err.consent = "You must agree to be contacted.";
     setErrors(err);
     if (Object.keys(err).length > 0) return;
@@ -102,16 +112,46 @@ export default function Home() {
     setErrors({});
     try {
       const criteria: Record<string, unknown> = {
-        beds: beds === "Any" ? [] : [beds],
-        baths: baths === "Any" ? [] : [baths],
-        acreage: acreage === "Any" ? [] : [acreage],
-        price: price === "Any" ? [] : [price],
-        guestHouse,
-        garage,
-        areas,
+        leadKind: "HOME_VALUE_SNAPSHOT",
+        propertyAddress: address.trim(),
       };
-      const otherText = areasOther.trim().slice(0, AREAS_OTHER_MAX) || undefined;
-      if (otherText !== undefined) criteria.otherText = otherText;
+      const bedsNum = parseNum(beds);
+      if (bedsNum !== undefined) criteria.beds = bedsNum;
+      const bathsNum = parseNum(baths);
+      if (bathsNum !== undefined) criteria.baths = bathsNum;
+      if (garage.trim()) criteria.garage = garage.trim();
+      const sqftNum = parseNum(squareFootage);
+      if (sqftNum !== undefined) criteria.squareFootage = sqftNum;
+      const acreageNum = parseNum(acreage);
+      if (acreageNum !== undefined) criteria.acreage = acreageNum;
+      const yearNum = parseNum(yearBuilt);
+      if (yearNum !== undefined) criteria.yearBuilt = yearNum;
+      if (remodeled === "YES" || remodeled === "NO" || remodeled === "UNKNOWN") criteria.remodeled = remodeled;
+      if (utilities.length > 0) criteria.utilities = utilities;
+      if (views.length > 0) criteria.views = views;
+      if (adjacency.length > 0) criteria.adjacency = adjacency;
+      if (guestHouse === "yes") {
+        criteria.guestHouse = {
+          has: true,
+          ...(parseNum(guestHouseBeds) !== undefined && { beds: parseNum(guestHouseBeds) }),
+          ...(parseNum(guestHouseBaths) !== undefined && { baths: parseNum(guestHouseBaths) }),
+          ...(parseNum(guestHouseSqft) !== undefined && { sqft: parseNum(guestHouseSqft) }),
+        };
+      } else if (guestHouse === "no") {
+        criteria.guestHouse = { has: false };
+      }
+      if (hasTriedToSellRecently === "yes") {
+        criteria.triedToSellRecently = {
+          has: true,
+          ...(parseNum(priorListPrice) !== undefined && { priorListPrice: parseNum(priorListPrice) }),
+          ...(priorListStartDate.trim() && { startDate: priorListStartDate.trim() }),
+          ...(priorListEndDate.trim() && { endDate: priorListEndDate.trim() }),
+          ...(priorNotes.trim() && { notes: priorNotes.trim() }),
+        };
+      } else if (hasTriedToSellRecently === "no") {
+        criteria.triedToSellRecently = { has: false };
+      }
+      if (timeline.trim()) criteria.timeline = timeline.trim();
 
       const res = await fetch("/api/intake", {
         method: "POST",
@@ -121,7 +161,7 @@ export default function Home() {
           email: email.trim(),
           phone: phone.trim(),
           criteria,
-          message: message.trim().slice(0, MESSAGE_MAX) || undefined,
+          message: notes.trim().slice(0, MESSAGE_MAX) || undefined,
         }),
       });
       const data = await res.json();
@@ -133,15 +173,28 @@ export default function Home() {
       setFullName("");
       setEmail("");
       setPhone("");
-      setBeds("Any");
-      setBaths("Any");
-      setAcreage("Any");
-      setPrice("Any");
-      setGuestHouse("Any");
-      setGarage("Any");
-      setAreas([]);
-      setAreasOther("");
-      setMessage("");
+      setAddress("");
+      setBeds("");
+      setBaths("");
+      setGarage("");
+      setSquareFootage("");
+      setAcreage("");
+      setYearBuilt("");
+      setRemodeled("");
+      setUtilities([]);
+      setViews([]);
+      setAdjacency([]);
+      setGuestHouse("");
+      setGuestHouseBeds("");
+      setGuestHouseBaths("");
+      setGuestHouseSqft("");
+      setHasTriedToSellRecently("");
+      setPriorListPrice("");
+      setPriorListStartDate("");
+      setPriorListEndDate("");
+      setPriorNotes("");
+      setTimeline("");
+      setNotes("");
       setConsent(false);
       setErrors({});
     } catch (e) {
@@ -291,7 +344,6 @@ export default function Home() {
               </p>
             )}
 
-            {/* Section 1 — Contact (side by side) */}
             <div className="space-y-3">
               <div>
                 <input
@@ -304,212 +356,271 @@ export default function Home() {
                 />
                 {errors.fullName && <p className="mt-0.5 text-xs text-red-600">{errors.fullName}</p>}
               </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-                    placeholder="Email *"
-                  />
-                  {errors.email && <p className="mt-0.5 text-xs text-red-600">{errors.email}</p>}
-                </div>
-                <div>
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-                    placeholder="Phone *"
-                  />
-                  {errors.phone && <p className="mt-0.5 text-xs text-red-600">{errors.phone}</p>}
-                </div>
+              <div>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
+                  placeholder="Email *"
+                />
+                {errors.email && <p className="mt-0.5 text-xs text-red-600">{errors.email}</p>}
+              </div>
+              <div>
+                <input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
+                  placeholder="Phone *"
+                />
+                {errors.phone && <p className="mt-0.5 text-xs text-red-600">{errors.phone}</p>}
+              </div>
+              <div>
+                <input
+                  id="address"
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
+                  placeholder="Property address *"
+                />
+                {errors.address && <p className="mt-0.5 text-xs text-red-600">{errors.address}</p>}
               </div>
             </div>
 
-            {/* Section 2 — Criteria (dropdowns + areas multi-select) */}
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="beds" className="block text-xs font-medium text-neutral-600">
-                  Beds
-                </label>
-                <select
+                <label htmlFor="beds" className="block text-xs font-medium text-neutral-600">Beds (optional)</label>
+                <input
                   id="beds"
+                  type="number"
+                  min={0}
                   value={beds}
                   onChange={(e) => setBeds(e.target.value)}
                   className={`mt-1 ${inputSelectClass}`}
-                >
-                  {BEDS.map((v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="e.g. 3"
+                />
               </div>
               <div>
-                <label htmlFor="baths" className="block text-xs font-medium text-neutral-600">
-                  Baths
-                </label>
-                <select
+                <label htmlFor="baths" className="block text-xs font-medium text-neutral-600">Baths (optional, halves ok)</label>
+                <input
                   id="baths"
+                  type="number"
+                  min={0}
+                  step={0.5}
                   value={baths}
                   onChange={(e) => setBaths(e.target.value)}
                   className={`mt-1 ${inputSelectClass}`}
-                >
-                  {BATHS.map((v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
+                  placeholder="e.g. 2.5"
+                />
+              </div>
+              <div>
+                <label htmlFor="garage" className="block text-xs font-medium text-neutral-600">Garage (optional)</label>
+                <select id="garage" value={garage} onChange={(e) => setGarage(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  <option value="">—</option>
+                  {GARAGE_OPTIONS.map((v) => (
+                    <option key={v} value={v}>{v}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label htmlFor="acreage" className="block text-xs font-medium text-neutral-600">
-                  Acreage
-                </label>
-                <select
+                <label htmlFor="squareFootage" className="block text-xs font-medium text-neutral-600">Square footage (optional)</label>
+                <input
+                  id="squareFootage"
+                  type="number"
+                  min={0}
+                  value={squareFootage}
+                  onChange={(e) => setSquareFootage(e.target.value)}
+                  className={`mt-1 ${inputSelectClass}`}
+                  placeholder="e.g. 1850"
+                />
+              </div>
+              <div>
+                <label htmlFor="acreage" className="block text-xs font-medium text-neutral-600">Acreage (optional)</label>
+                <input
                   id="acreage"
+                  type="number"
+                  min={0}
+                  step={0.1}
                   value={acreage}
                   onChange={(e) => setAcreage(e.target.value)}
                   className={`mt-1 ${inputSelectClass}`}
-                >
-                  {ACREAGE.map((v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
+                  placeholder="e.g. 1.5"
+                />
+              </div>
+              <div>
+                <label htmlFor="yearBuilt" className="block text-xs font-medium text-neutral-600">Year built (optional)</label>
+                <input
+                  id="yearBuilt"
+                  type="number"
+                  min={1800}
+                  max={new Date().getFullYear() + 1}
+                  value={yearBuilt}
+                  onChange={(e) => setYearBuilt(e.target.value)}
+                  className={`mt-1 ${inputSelectClass}`}
+                  placeholder="e.g. 1995"
+                />
+              </div>
+              <div>
+                <label htmlFor="remodeled" className="block text-xs font-medium text-neutral-600">Remodeled (optional)</label>
+                <select id="remodeled" value={remodeled} onChange={(e) => setRemodeled(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {REMODELED_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label || "—"}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label htmlFor="price" className="block text-xs font-medium text-neutral-600">
-                  Price
-                </label>
-                <select
-                  id="price"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className={`mt-1 ${inputSelectClass}`}
-                >
-                  {PRICE.map((v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
+                <label htmlFor="timeline" className="block text-xs font-medium text-neutral-600">Timeline (optional)</label>
+                <select id="timeline" value={timeline} onChange={(e) => setTimeline(e.target.value)} className={`mt-1 ${inputSelectClass}`}>
+                  {TIMELINE_OPTIONS.map((o) => (
+                    <option key={o.value || "blank"} value={o.value}>{o.label || "—"}</option>
                   ))}
                 </select>
-              </div>
-              <div>
-                <label htmlFor="guestHouse" className="block text-xs font-medium text-neutral-600">
-                  Guest House
-                </label>
-                <select
-                  id="guestHouse"
-                  value={guestHouse}
-                  onChange={(e) => setGuestHouse(e.target.value)}
-                  className={`mt-1 ${inputSelectClass}`}
-                >
-                  {GUEST_HOUSE.map((v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="garage" className="block text-xs font-medium text-neutral-600">
-                  Garage
-                </label>
-                <select
-                  id="garage"
-                  value={garage}
-                  onChange={(e) => setGarage(e.target.value)}
-                  className={`mt-1 ${inputSelectClass}`}
-                >
-                  {GARAGE.map((v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="sm:col-span-2" ref={areasDropdownRef}>
-                <label className="block text-xs font-medium text-neutral-600">
-                  Areas
-                </label>
-                <div className="relative mt-1">
-                  <button
-                    type="button"
-                    onClick={() => setAreasDropdownOpen((o) => !o)}
-                    className={`w-full rounded-lg border border-neutral-300 px-3 py-2 text-left text-sm text-neutral-900 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500 ${inputSelectClass}`}
-                  >
-                    {areas.length === 0 ? "Select areas" : areas.join(", ")}
-                  </button>
-                  {areasDropdownOpen && (
-                    <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-neutral-300 bg-white py-1 shadow-lg">
-                      {AREAS.map((v) => (
-                        <label
-                          key={v}
-                          className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-50"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={areas.includes(v)}
-                            onChange={() => toggleArea(v)}
-                            className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
-                          />
-                          {v}
-                        </label>
-                      ))}
-                      <div className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-neutral-50">
-                        <label className="flex cursor-pointer items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={areas.includes("Other")}
-                            onChange={() => toggleArea("Other")}
-                            className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
-                          />
-                          Other
-                        </label>
-                        {areas.includes("Other") && (
-                          <input
-                            type="text"
-                            id="areasOther"
-                            value={areasOther}
-                            onChange={(e) => setAreasOther(e.target.value.slice(0, AREAS_OTHER_MAX))}
-                            onMouseDown={(e) => e.stopPropagation()}
-                            maxLength={20}
-                            placeholder="Specify area"
-                            className="w-56 max-w-full flex-none rounded border border-neutral-300 px-2 py-1.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
 
-            {/* Section 3 — Message (150 chars) + consent (tight) */}
+            <div className="mt-4">
+              <span className="block text-xs font-medium text-neutral-600">Utilities (optional)</span>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+                {UTILITIES.map((v) => (
+                  <label key={v} className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={utilities.includes(v)}
+                      onChange={() => setUtilities((prev) => toggleMulti(prev, v))}
+                      className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
+                    />
+                    {v}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <span className="block text-xs font-medium text-neutral-600">Views (optional)</span>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+                {VIEWS_OPTIONS.map((v) => (
+                  <label key={v} className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={views.includes(v)}
+                      onChange={() => setViews((prev) => toggleMulti(prev, v))}
+                      className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
+                    />
+                    {v}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <span className="block text-xs font-medium text-neutral-600">Adjacency (optional)</span>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+                {ADJACENCY_OPTIONS.map((v) => (
+                  <label key={v} className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={adjacency.includes(v)}
+                      onChange={() => setAdjacency((prev) => toggleMulti(prev, v))}
+                      className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
+                    />
+                    {v}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <span className="block text-xs font-medium text-neutral-600">Guest house (optional)</span>
+              <div className="mt-2 flex gap-4">
+                <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                  <input type="radio" name="guestHouse" checked={guestHouse === "yes"} onChange={() => setGuestHouse("yes")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
+                  Yes
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                  <input type="radio" name="guestHouse" checked={guestHouse === "no"} onChange={() => setGuestHouse("no")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
+                  No
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                  <input type="radio" name="guestHouse" checked={guestHouse === ""} onChange={() => setGuestHouse("")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
+                  —
+                </label>
+              </div>
+              {guestHouse === "yes" && (
+                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div>
+                    <label htmlFor="guestHouseBeds" className="block text-xs text-neutral-500">Guest house beds</label>
+                    <input id="guestHouseBeds" type="number" min={0} value={guestHouseBeds} onChange={(e) => setGuestHouseBeds(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                  </div>
+                  <div>
+                    <label htmlFor="guestHouseBaths" className="block text-xs text-neutral-500">Guest house baths</label>
+                    <input id="guestHouseBaths" type="number" min={0} step={0.5} value={guestHouseBaths} onChange={(e) => setGuestHouseBaths(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                  </div>
+                  <div>
+                    <label htmlFor="guestHouseSqft" className="block text-xs text-neutral-500">Guest house sq ft</label>
+                    <input id="guestHouseSqft" type="number" min={0} value={guestHouseSqft} onChange={(e) => setGuestHouseSqft(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4">
+              <span className="block text-xs font-medium text-neutral-600">Tried to sell recently? (optional)</span>
+              <div className="mt-2 flex gap-4">
+                <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                  <input type="radio" name="triedToSell" checked={hasTriedToSellRecently === "yes"} onChange={() => setHasTriedToSellRecently("yes")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
+                  Yes
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                  <input type="radio" name="triedToSell" checked={hasTriedToSellRecently === "no"} onChange={() => setHasTriedToSellRecently("no")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
+                  No
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-2 text-sm">
+                  <input type="radio" name="triedToSell" checked={hasTriedToSellRecently === ""} onChange={() => setHasTriedToSellRecently("")} className="border-neutral-300 text-neutral-700 focus:ring-neutral-500" />
+                  —
+                </label>
+              </div>
+              {hasTriedToSellRecently === "yes" && (
+                <div className="mt-3 space-y-3">
+                  <div>
+                    <label htmlFor="priorListPrice" className="block text-xs text-neutral-500">Prior list price</label>
+                    <input id="priorListPrice" type="number" min={0} value={priorListPrice} onChange={(e) => setPriorListPrice(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="—" />
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="priorListStartDate" className="block text-xs text-neutral-500">List start date</label>
+                      <input id="priorListStartDate" type="date" value={priorListStartDate} onChange={(e) => setPriorListStartDate(e.target.value)} className={`mt-1 ${inputSelectClass}`} />
+                    </div>
+                    <div>
+                      <label htmlFor="priorListEndDate" className="block text-xs text-neutral-500">List end date</label>
+                      <input id="priorListEndDate" type="date" value={priorListEndDate} onChange={(e) => setPriorListEndDate(e.target.value)} className={`mt-1 ${inputSelectClass}`} />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="priorNotes" className="block text-xs text-neutral-500">Notes</label>
+                    <input id="priorNotes" type="text" value={priorNotes} onChange={(e) => setPriorNotes(e.target.value)} className={`mt-1 ${inputSelectClass}`} placeholder="Brief notes" />
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="mt-4 space-y-3">
               <div>
-                <label htmlFor="message" className="block text-xs font-medium text-neutral-600">
-                  Property details (address, beds/baths, condition, upgrades, timeline) <span className="font-normal text-neutral-400">(optional, max 150)</span>
-                </label>
+                <label htmlFor="notes" className="block text-xs font-medium text-neutral-600">Notes <span className="font-normal text-neutral-400">(optional, max {MESSAGE_MAX})</span></label>
                 <textarea
-                  id="message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value.slice(0, MESSAGE_MAX))}
-                  maxLength={150}
+                  id="notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value.slice(0, MESSAGE_MAX))}
+                  maxLength={MESSAGE_MAX}
                   rows={2}
                   className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-                  placeholder="Example: 123 Canyon Rd, 3/2, ~1,650 sqft, renovated kitchen, thinking about selling this summer."
+                  placeholder="Anything else you’d like me to know."
                 />
-                <p className="mt-0.5 text-right text-xs text-neutral-500">
-                  {message.length} / 150
-                </p>
-                {errors.message && <p className="mt-0.5 text-xs text-red-600">{errors.message}</p>}
+                <p className="mt-0.5 text-right text-xs text-neutral-500">{notes.length} / {MESSAGE_MAX}</p>
+                {errors.notes && <p className="mt-0.5 text-xs text-red-600">{errors.notes}</p>}
               </div>
               <div>
                 <label className="inline-flex items-start gap-2">
@@ -527,7 +638,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Section 4 — Submit */}
             <button
               type="submit"
               disabled={!canSubmit || loading}
