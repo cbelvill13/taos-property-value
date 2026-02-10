@@ -77,6 +77,7 @@ const HOA_OPTIONS = [
   { value: "UNKNOWN", label: "Unknown" },
 ];
 const RESTRICTIONS_OPTIONS = [
+  { value: "", label: "—" },
   { value: "noneKnown", label: "None Known" },
   { value: "hoa", label: "HOA" },
   { value: "deed", label: "Deed Restrictions" },
@@ -116,7 +117,7 @@ export default function Home() {
   const [waterSource, setWaterSource] = useState("");
   const [wastewater, setWastewater] = useState("");
   const [hoa, setHoa] = useState("");
-  const [restrictions, setRestrictions] = useState<string[]>([]);
+  const [restrictions, setRestrictions] = useState("");
   const [restrictionsNotes, setRestrictionsNotes] = useState("");
   const [views, setViews] = useState<string[]>([]);
   const [adjacency, setAdjacency] = useState<string[]>([]);
@@ -182,7 +183,7 @@ export default function Home() {
       if (waterSource.trim()) criteria.waterSource = waterSource.trim();
       if (wastewater.trim()) criteria.wastewater = wastewater.trim();
       if (hoa === "YES" || hoa === "NO" || hoa === "UNKNOWN") criteria.hoa = hoa;
-      if (restrictions.length > 0) criteria.restrictions = restrictions;
+      if (restrictions.trim()) criteria.restrictions = restrictions.trim();
       if (restrictionsNotes.trim()) criteria.restrictionsNotes = restrictionsNotes.trim().slice(0, 120);
       if (views.length > 0) criteria.views = views;
       if (adjacency.length > 0) criteria.adjacency = adjacency;
@@ -242,7 +243,7 @@ export default function Home() {
       setWaterSource("");
       setWastewater("");
       setHoa("");
-      setRestrictions([]);
+      setRestrictions("");
       setRestrictionsNotes("");
       setViews([]);
       setAdjacency([]);
@@ -594,20 +595,17 @@ export default function Home() {
             </div>
 
             <div className="mt-4">
-              <span className="block text-xs font-medium text-neutral-600">Restrictions</span>
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+              <label htmlFor="restrictions" className="block text-xs font-medium text-neutral-600">Restrictions</label>
+              <select
+                id="restrictions"
+                value={restrictions}
+                onChange={(e) => setRestrictions(e.target.value)}
+                className={`mt-1 ${inputSelectClass}`}
+              >
                 {RESTRICTIONS_OPTIONS.map((o) => (
-                  <label key={o.value} className="inline-flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={restrictions.includes(o.value)}
-                      onChange={() => setRestrictions((prev) => toggleMulti(prev, o.value))}
-                      className="rounded border-neutral-300 text-neutral-700 focus:ring-neutral-500"
-                    />
-                    {o.label}
-                  </label>
+                  <option key={o.value || "blank"} value={o.value}>{o.label}</option>
                 ))}
-              </div>
+              </select>
               <div className="mt-2">
                 <input
                   id="restrictionsNotes"
