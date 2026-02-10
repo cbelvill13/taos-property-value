@@ -399,19 +399,11 @@ export default function Home() {
           Get a local pricing snapshot for your Taos-area property.
         </h1>
         <p className="mt-2 text-base leading-relaxed text-neutral-600 sm:text-lg">
-          A real valuation is more than three recent comps.
-          <br />
-          This is a market-based pricing range built from how properties are actually moving right now.
+          A credible value range looks at the full market: what's selling, what's not, how pricing is shifting, and how buyers are behaving right now.
         </p>
 
-        <p className="mt-6 text-base leading-relaxed text-neutral-700">
-          Comps are the starting point — not the answer.
-        </p>
         <p className="mt-3 text-base leading-relaxed text-neutral-700">
-          A credible value range accounts for more than what sold most recently. It looks at what’s active, what’s pending, what’s sitting, how pricing has shifted, and how buyers are responding in today’s market.
-        </p>
-        <p className="mt-3 text-base leading-relaxed text-neutral-700">
-          That broader context is what turns raw data into a number that holds up once buyers start comparing, inspecting, and negotiating.
+          That context turns raw data into pricing that holds up in the real world.
         </p>
 
         <h2 className="mt-8 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
