@@ -1,3 +1,4 @@
+import { sendLeadNotifyEmail } from "@/lib/notifications/leadNotify";
 import { NextResponse } from "next/server";
 
 const MESSAGE_MAX = 150;
@@ -83,6 +84,18 @@ export async function POST(request: Request) {
     clearTimeout(timeoutId);
 
     if (response.ok) {
+      const payload = validated.payload;
+      const leadId = crypto.randomUUID();
+      void sendLeadNotifyEmail({
+        leadId,
+        name: (payload.fullName as string) ?? "",
+        email: (payload.email as string) ?? "",
+        phone: (payload.phone as string) ?? "",
+        createdAt: new Date().toISOString(),
+        source: (payload.source as string) ?? "taoshomevalue.com",
+        criteria: payload.criteria as Record<string, unknown> | undefined,
+        message: payload.message as string | undefined,
+      }).catch((err) => console.warn("[lead-notify]", err));
       return NextResponse.json({ ok: true });
     }
 
